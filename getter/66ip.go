@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/henson/ProxyPool/models"
+	"github.com/mumugoah/ProxyPool/models"
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -16,7 +16,7 @@ func IP66() (result []*models.IP) {
 		log.Println(errs)
 		return
 	}
-	body = strings.Split(body, "var sogou_ad_width=960;")[1]
+	body = strings.Split(body, "var mediav_ad_height = '60';")[1]
 	body = strings.Split(body, "</script>")[1]
 	body = strings.Split(body, "</div>")[0]
 	body = strings.TrimSpace(body)
