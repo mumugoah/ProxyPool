@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"log"
+
 	"github.com/mumugoah/ProxyPool/models"
 	"github.com/mumugoah/ProxyPool/util"
 	"gopkg.in/mgo.v2"
@@ -10,9 +12,6 @@ import (
 // Config 全局配置文件
 var Config = util.NewConfig()
 
-// GlobalMgoSession 全局连接Session
-var GlobalMgoSession, _ = mgo.Dial(string(Config.Mongo.Addr))
-
 // Storage struct is used for storeing persistent data of alerts
 type Storage struct {
 	database string
@@ -21,8 +20,21 @@ type Storage struct {
 }
 
 // NewStorage creates and returns new Storage instance
+var instance *Storage
+
 func NewStorage() *Storage {
-	return &Storage{database: Config.Mongo.DB, table: Config.Mongo.Table, session: GlobalMgoSession}
+	if instance == nil {
+		session, _ := mgo.Dial(string(Config.Mongo.Addr))
+		instance = &Storage{database: Config.Mongo.DB, table: Config.Mongo.Table, session: session}
+		//index
+		ses := instance.GetDBSession()
+		defer ses.Close()
+		err := ses.DB(instance.database).C(instance.table).EnsureIndex(mgo.Index{Unique: true, Key: []string{"data"}})
+		if err != nil {
+			log.Fatalf("mongo index error: %s", err)
+		}
+	}
+	return instance
 }
 
 // GetDBSession returns a new connection from the pool

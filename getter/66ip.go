@@ -26,8 +26,10 @@ func IP66() (result []*models.IP) {
 		ip := models.NewIP()
 		ip.Data = strings.TrimSpace(temp[index])
 		ip.Type = "http"
+		//log.Println(ip.Data)
 		result = append(result, ip)
 	}
-	log.Println("IP66 done.")
-	return
+	log.Printf("Fetch IP66 done. Get %d IPs", len(result))
+
+	return result
 }

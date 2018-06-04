@@ -20,13 +20,15 @@ func CheckProxy(ip *models.IP) {
 // CheckIP is to check the ip work or not
 func CheckIP(ip *models.IP) bool {
 	pollURL := "http://httpbin.org/get"
-	resp, _, errs := gorequest.New().Proxy("http://" + ip.Data).Get(pollURL).End()
+	resp, _, errs := gorequest.New().Proxy(ip.Type + "://" + ip.Data).Timeout(5 * time.Second).Get(pollURL).End()
 	if errs != nil {
 		return false
 	}
 	if resp.StatusCode == 200 {
+		log.Printf("Check Proxy %s success", ip.Data)
 		return true
 	}
+	log.Printf("Check Proxy %s fail", ip.Data)
 	return false
 }
 

@@ -23,12 +23,17 @@ func main() {
 	}()
 
 	// Check the IPs in DB
+	// add 定时
 	go func() {
-		storage.CheckProxyDB()
+		for {
+			storage.CheckProxyDB()
+			time.Sleep(5 * time.Minute)
+		}
+
 	}()
 
 	// Check the IPs in channel
-	for i := 0; i < 50; i++ {
+	for i := 0; i < 100; i++ {
 		go func() {
 			for {
 				storage.CheckProxy(<-ipChan)
@@ -43,22 +48,20 @@ func main() {
 		if len(ipChan) < 100 {
 			go run(ipChan)
 		}
-		time.Sleep(10 * time.Minute)
+		// 5 Minutes Loop Get
+		time.Sleep(5 * time.Minute)
 	}
 }
 
 func run(ipChan chan<- *models.IP) {
 	var wg sync.WaitGroup
 	funs := []func() []*models.IP{
-		getter.Data5u,
 		getter.IP66,
-		getter.KDL,
-		getter.GBJ,
+		getter.Au2,
+		getter.CoolProxy,
+		getter.Data5u,
+		getter.Kuai,
 		getter.Xici,
-		getter.XDL,
-		getter.IP181,
-		//getter.YDL,		//失效的采集脚本，用作系统容错实验
-		getter.PLP,
 	}
 	for _, f := range funs {
 		wg.Add(1)
