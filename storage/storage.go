@@ -3,6 +3,8 @@ package storage
 import (
 	"log"
 
+	"fmt"
+
 	"github.com/mumugoah/ProxyPool/models"
 	"github.com/mumugoah/ProxyPool/util"
 	"gopkg.in/mgo.v2"
@@ -24,12 +26,16 @@ var instance *Storage
 
 func NewStorage() *Storage {
 	if instance == nil {
-		session, _ := mgo.Dial(string(Config.Mongo.Addr))
+		fmt.Println(fmt.Sprintf("mongodb://%s?maxPoolSize=15", util.NewConfig().Mongo.Host))
+		session, err := mgo.Dial(fmt.Sprintf("mongodb://%s?maxPoolSize=15", util.NewConfig().Mongo.Host))
+		if err != nil {
+			log.Fatalf("数据库连接失败: %s", err)
+		}
 		instance = &Storage{database: Config.Mongo.DB, table: Config.Mongo.Table, session: session}
 		//index
 		ses := instance.GetDBSession()
 		defer ses.Close()
-		err := ses.DB(instance.database).C(instance.table).EnsureIndex(mgo.Index{Unique: true, Key: []string{"data"}})
+		err = ses.DB(instance.database).C(instance.table).EnsureIndex(mgo.Index{Unique: true, Key: []string{"data"}})
 		if err != nil {
 			log.Fatalf("mongo index error: %s", err)
 		}

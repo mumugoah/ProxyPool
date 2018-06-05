@@ -10,8 +10,11 @@ import (
 
 // IP66 get ip from 66ip.cn
 func IP66() (result []*models.IP) {
-	pollURL := "http://www.66ip.cn/mo.php?tqsl=100"
-	_, body, errs := gorequest.New().Get(pollURL).End()
+	url := "http://www.66ip.cn/mo.php?tqsl=100"
+	_, body, errs := gorequest.New().
+		Get(url).
+		Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36").
+		End()
 	if errs != nil {
 		log.Println(errs)
 		return

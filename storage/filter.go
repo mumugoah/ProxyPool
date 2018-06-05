@@ -6,7 +6,10 @@ import (
 	"sync"
 	"time"
 
+	"strings"
+
 	"github.com/mumugoah/ProxyPool/models"
+	"github.com/mumugoah/ProxyPool/util"
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -19,14 +22,31 @@ func CheckProxy(ip *models.IP) {
 
 // CheckIP is to check the ip work or not
 func CheckIP(ip *models.IP) bool {
-	pollURL := "http://httpbin.org/get"
-	resp, _, errs := gorequest.New().Proxy(ip.Type + "://" + ip.Data).Timeout(5 * time.Second).Get(pollURL).End()
-	if errs != nil {
-		return false
-	}
-	if resp.StatusCode == 200 {
-		log.Printf("Check Proxy %s success", ip.Data)
-		return true
+	//三次验证如果又一次通过都可以
+	for i := 0; i < 3; i++ {
+		resp, body, errs := gorequest.New().Proxy(ip.Type + "://" + ip.Data).Timeout(5 * time.Second).Get(util.NewConfig().CheckURL).End()
+		if errs != nil {
+			if i < 2 {
+				time.Sleep(1 * time.Second)
+				continue
+			} else {
+				break
+			}
+
+		}
+		if resp.StatusCode == 200 {
+			// 判断结果是否含有值
+			if strings.Contains(body, util.NewConfig().CheckString) {
+				log.Printf("Check Proxy %s success", ip.Data)
+				return true
+			}
+		}
+		if i < 2 {
+			time.Sleep(1 * time.Second)
+			continue
+		} else {
+			break
+		}
 	}
 	log.Printf("Check Proxy %s fail", ip.Data)
 	return false

@@ -1,35 +1,42 @@
 package util
 
-import (
-	"encoding/json"
-	"io/ioutil"
-	"log"
-)
+import "os"
 
 // Config struct defines the config structure
 type Config struct {
-	Mongo MongoConfig `json:"mongo"`
-	Host  string      `json:"host"`
+	Mongo       MongoConfig
+	Port        string
+	CheckURL    string
+	CheckString string
 }
 
 // MongoConfig has config values for Mongo
 type MongoConfig struct {
-	Addr  string `json:"addr"`
-	DB    string `json:"db"`
-	Table string `json:"table"`
-	Event string `json:"event"`
+	Host  string
+	DB    string
+	Table string
 }
 
 // NewConfig parses config file and return Config struct
 func NewConfig() *Config {
-	file, err := ioutil.ReadFile("./config.json")
-	if err != nil {
-		log.Fatalln("Read config file error.")
+	config := &Config{
+		Mongo: MongoConfig{
+			Host:  "127.0.0.1:27017",
+			DB:    "proxy_pool",
+			Table: "proxies",
+		},
+		Port:        "8080",
+		CheckURL:    "http://www.httpbin.org/get",
+		CheckString: "headers",
 	}
-	config := &Config{}
-	err = json.Unmarshal(file, config)
-	if err != nil {
-		panic(err)
+	if os.Getenv("MONGO_HOST") != "" {
+		config.Mongo.Host = os.Getenv("MONGO_HOST")
+	}
+	if os.Getenv("CHECK_URL") != "" {
+		config.CheckURL = os.Getenv("CHECK_URL")
+	}
+	if os.Getenv("CHECK_STRING") != "" {
+		config.CheckString = os.Getenv("CHECK_STRING")
 	}
 
 	return config

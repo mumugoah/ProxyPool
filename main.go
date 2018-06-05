@@ -10,6 +10,7 @@ import (
 	"github.com/mumugoah/ProxyPool/getter"
 	"github.com/mumugoah/ProxyPool/models"
 	"github.com/mumugoah/ProxyPool/storage"
+	"github.com/mumugoah/ProxyPool/util"
 )
 
 func main() {
@@ -22,12 +23,14 @@ func main() {
 		api.Run()
 	}()
 
+	log.Printf("Check URL Is: %s, String is %s", util.NewConfig().CheckURL, util.NewConfig().CheckString)
+
 	// Check the IPs in DB
 	// add 定时
 	go func() {
 		for {
 			storage.CheckProxyDB()
-			time.Sleep(5 * time.Minute)
+			time.Sleep(2 * time.Minute)
 		}
 
 	}()
@@ -49,7 +52,7 @@ func main() {
 			go run(ipChan)
 		}
 		// 5 Minutes Loop Get
-		time.Sleep(5 * time.Minute)
+		time.Sleep(30 * time.Minute)
 	}
 }
 

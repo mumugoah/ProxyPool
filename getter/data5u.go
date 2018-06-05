@@ -22,7 +22,6 @@ func Data5u() (result []*models.IP) {
 		resp, _, errs := gorequest.New().
 			Get(url).
 			Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36").
-			Proxy("http://localhost:8888").
 			End()
 
 		if errs != nil {

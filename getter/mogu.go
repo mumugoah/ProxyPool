@@ -44,9 +44,10 @@ func Mogu() (result []*models.IP) {
 		ip := models.NewIP()
 		ip.Data = proxy.Get("ip").Str + ":" + proxy.Get("port").Str
 		ip.Type = "http"
-		log.Println(ip.Data)
 		result = append(result, ip)
 	}
+
+	log.Printf("Fetch Mogu done. Get %d IPs", len(result))
 
 	return result
 }

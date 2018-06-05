@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"fmt"
+
 	"github.com/mumugoah/ProxyPool/storage"
 	"github.com/mumugoah/ProxyPool/util"
 )
@@ -17,8 +19,8 @@ func Run() {
 	mux := http.NewServeMux()
 	mux.HandleFunc(VERSION+"/ip", ProxyHandler)
 	mux.HandleFunc(VERSION+"/https", FindHandler)
-	log.Println("Starting server", util.NewConfig().Host)
-	http.ListenAndServe(util.NewConfig().Host, mux)
+	log.Println("Starting server at port", util.NewConfig().Port)
+	http.ListenAndServe(fmt.Sprintf(":%s", util.NewConfig().Port), mux)
 }
 
 // ProxyHandler .

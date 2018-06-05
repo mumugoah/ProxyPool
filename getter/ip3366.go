@@ -41,7 +41,7 @@ func IP3366() (result []*models.IP) {
 			port := htmlquery.FindOne(n, "./td[2]/text()").Data
 			ip.Data = util.GetIP(ipS) + ":" + port
 			ip.Type = strings.ToLower(htmlquery.FindOne(n, "./td[4]/text()").Data)
-			log.Println(ip.Data)
+			//log.Println(ip.Data)
 			result = append(result, ip)
 		})
 
